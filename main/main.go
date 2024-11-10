@@ -1,7 +1,15 @@
 package main
 
-import "sqli/vuln"
+import (
+	"net/http"
+	// "sqli/controllers"
+	// "sqli/views"
+)
+
+// import "sqli/vuln"
 
 func main() {
-	vuln.InsecureQuery("Footwear")
+	Router()
+	http.ListenAndServe("0.0.0.0:5001", nil)
 }
+

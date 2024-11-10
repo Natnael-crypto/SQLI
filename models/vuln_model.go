@@ -1,4 +1,4 @@
-package vuln
+package models
 
 import (
 	"database/sql"
@@ -72,4 +72,8 @@ func InsecureQuery(category string) ([]Product, error) {
 	}
 	return products, nil
 
+}
+
+func some()bool {
+	return true
 }
