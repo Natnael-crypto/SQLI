@@ -1,3 +1,49 @@
+DROP TABLE IF EXISTS products, employees, credentials;
+
+CREATE TABLE employees(
+    id int AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+    name VARCHAR(200) NOT NULL, 
+    salary DECIMAL(7,2) NOT NULL
+);
+
+INSERT INTO employees (name, salary) VALUES
+('John Doe', 50000),
+('Jane Smith', 60000),
+('Alex Johnson', 45000),
+('Emily Brown', 70000),
+('David Lee', 55000),
+('Sarah Kim', 65000),
+('Michael Davis', 40000),
+('Olivia Taylor', 80000),
+('William Wilson', 50000),
+('Sophia Miller', 60000),
+('Benjamin Jackson', 45000),
+('Charlotte Lewis', 70000),
+('Thomas Brown', 55000),
+('Olivia Nelson', 65000),
+('James Wilson', 40000),
+('Ava Johnson', 80000),
+('Robert Lee', 50000),
+('Mia Taylor', 60000),
+('William Miller', 45000),
+('Sophia Davis', 70000),
+('Benjamin Jackson', 55000),
+('Charlotte Lewis', 65000),
+('Thomas Brown', 40000),
+('Olivia Nelson', 80000),
+('James Wilson', 50000),
+('Ava Johnson', 60000),
+('Robert Lee', 45000),
+('Mia Taylor', 70000);
+
+CREATE TABLE products(
+    id int AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+    name VARCHAR(200) NOT NULL, 
+    category VARCHAR(50) NOT NULL, 
+    price DECIMAL(6,2) NOT NULL, 
+    description TEXT
+);
+
 INSERT INTO products (name, category, price, description) VALUES
 ('Apple iPhone 13', 'Electronics', 799.99, 'Latest iPhone model with advanced features'),
 ('Samsung Galaxy S21', 'Electronics', 749.99, 'High-performance Android smartphone'),
@@ -30,6 +76,11 @@ INSERT INTO products (name, category, price, description) VALUES
 ('LG 55" OLED TV', 'Electronics', 1299.99, 'Premium OLED TV with perfect blacks and stunning picture quality'),
 ('Whirlpool Refrigerator', 'Home Appliances', 899.99, 'Reliable and energy-efficient refrigerator for your kitchen');
 
+CREATE TABLE credentials(
+    id int AUTO_INCREMENT PRIMARY KEY NOT NULL, 
+    name VARCHAR(200) NOT NULL, 
+    password VARCHAR(200) NOT NULL
+);
 
 INSERT INTO credentials (name, password) VALUES
 ('admin', 'iam1337yo'),

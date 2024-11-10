@@ -7,11 +7,11 @@ import (
 	"testing/fstest"
 )
 
-func Test(t *testing.T) {
+func TestEnv(t *testing.T) {
 	fs := fstest.MapFS{
-		".env": {Data: []byte(`DBUSER=sqli
-DBPASS=sqlishouldbedeadalready
-DBADDR=192.168.92.43:3306
+		".env": {Data: []byte(`DBUSER=something
+DBPASS=somethingortheother
+DBADDR=133.133.133.133:3306
 DBNAME=sqlidb`)},
 	}
 
