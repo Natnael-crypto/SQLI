@@ -2,17 +2,18 @@ package initializer
 
 import (
 	"bufio"
-	"io/fs"
+	"bytes"
 	"log"
 	"os"
 	"strings"
 )
 
-func LoadEnv(fileSystem fs.FS) {
-	envFile, err := fileSystem.Open(".env")
+func LoadEnv() {
+	envBytes, err := os.ReadFile(".env")
 	if err != nil {
 		log.Fatalf("could not open env file, %v", err)
 	}
+	envFile := bytes.NewReader(envBytes)
 	scanner := bufio.NewScanner(envFile)
 	for scanner.Scan() {
 		enVar := strings.Split(scanner.Text(), "=")

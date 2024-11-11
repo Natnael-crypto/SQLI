@@ -4,21 +4,22 @@ import (
 	"os"
 	"sqli/initializer"
 	"testing"
-	"testing/fstest"
+	// "testing/fstest"
 )
 
 func TestEnv(t *testing.T) {
-	fs := fstest.MapFS{
-		".env": {Data: []byte(`DBUSER=something
-DBPASS=somethingortheother
-DBADDR=133.133.133.133:3306
-DBNAME=sqlidb`)},
-	}
+// 	fs := fstest.MapFS{
+// 		".env": {Data: []byte(`DBUSER=something
+// DBPASS=somethingortheother
+// DBADDR=133.133.133.133:3306
+// DBNAME=sqlidb`)},
+// 	}
+	
 
-	initializer.LoadEnv(fs)
+	initializer.LoadEnv()
 	got := os.Getenv("DBNAME")
 	want := "sqlidb"
 	if got != want {
-		t.Errorf("got %v, want %v",got, want )
+		t.Errorf("got %v, want %v", got, want)
 	}
 }

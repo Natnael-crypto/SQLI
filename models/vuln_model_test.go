@@ -8,14 +8,14 @@ import (
 func TestVulnSQL(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
 
-		_, err := models.InsecureQuery("Footwear")
+		_, err := models.VulnGetProductsByCategory("Footwear")
 
 		if err != nil {
 			t.Fatalf("got an error, was not expecting one, %v", err)
 		}
 	})
 	t.Run("footwear query injection", func(t *testing.T) {
-		products, _ := models.InsecureQuery(`Footwear' union select 1,@@version,3,4,5;-- -`)
+		products, _ := models.VulnGetProductsByCategory(`Footwear' union select 1,@@version,3,4,5;-- -`)
 		if !(len(products) > 0) {
 			t.Fatal("returned table is empty")
 		}

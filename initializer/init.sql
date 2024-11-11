@@ -78,11 +78,11 @@ INSERT INTO products (name, category, price, description) VALUES
 
 CREATE TABLE credentials(
     id int AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-    name VARCHAR(200) NOT NULL, 
+    username VARCHAR(200) NOT NULL, 
     password VARCHAR(200) NOT NULL
 );
 
-INSERT INTO credentials (name, password) VALUES
+INSERT INTO credentials (username, password) VALUES
 ('admin', 'iam1337yo'),
 ('administrator', 'heisntIam31337'),
 ('john_doe', 'password123'),
@@ -112,4 +112,5 @@ INSERT INTO credentials (name, password) VALUES
 ('james_wilson', 'password_12345'),
 ('ava_johnson', 'secret_key6789'),
 ('robert_lee', 'strong_code2345'),
+('test','test'),
 ('mia_taylor', 'secure_word9876');

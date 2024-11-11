@@ -7,4 +7,5 @@ import (
 
 func Router() {
 	http.HandleFunc("/vuln", controllers.VulnController)
+	http.HandleFunc("/login", controllers.LoginController)
 }

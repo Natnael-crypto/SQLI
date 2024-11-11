@@ -1,29 +1,23 @@
 package main
 
 import (
-	"embed"
-
+	"log"
+	"net/http"
 	"sqli/initializer"
 	// "sqli/controllers"
 	// "sqli/views"
 )
 
-var (
-	//go:embed .env
-	envFile embed.FS
-)
-
 func init() {
-
+	initializer.LoadEnv()
+	initializer.ConnectDB()
+	initializer.MigrateDB()
 }
 
 func main() {
-	// Router()
+	Router()
 
-	// address := "0.0.0.0:5001"
-	// http.ListenAndServe(address, nil)
-	// log.Printf("Listening on %v\n", address)
-	initializer.LoadEnv(envFile)
-	initializer.ConnectDB()
-	initializer.MigrateDB()
+	address := "0.0.0.0:5001"
+	log.Printf("Listening on %v\n", address)
+	http.ListenAndServe(address, nil)
 }
