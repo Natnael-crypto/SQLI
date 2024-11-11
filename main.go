@@ -3,15 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
-	"sqli/initializer"
+	"sqli/initializers"
 	// "sqli/controllers"
 	// "sqli/views"
 )
 
 func init() {
-	initializer.LoadEnv()
-	initializer.ConnectDB()
-	initializer.MigrateDB()
+	initializers.LoadEnv()
+	initializers.ConnectDB()
+	initializers.MigrateDB()
 }
 
 func main() {
