@@ -25,8 +25,8 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		req.ParseForm()
 		username := req.FormValue("username")
 		password := req.FormValue("password")
-		login := req.FormValue("login")
-		if login == vuln {
+		action := req.FormValue("action")
+		if action == vuln {
 			user, err = models.VulnLogin(username, password)
 		} else {
 			user, err = models.SecureLogin(username, password)
@@ -52,13 +52,13 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 		username := req.FormValue("username")
 		oldPassword := req.FormValue("oldPassword")
 		newPassword := req.FormValue("newPassword")
-		change_password := req.FormValue("change_password")
+		action := req.FormValue("action")
 
 		log.Printf("username: %v\n", username)
 		log.Printf("oldPassword: %v\n", oldPassword)
 		log.Printf("newPassword: %v\n", newPassword)
 
-		if change_password == vuln {
+		if action == vuln {
 			err = models.VulnChangePassword(username, oldPassword, newPassword)
 		}
 		if err != nil {
@@ -66,5 +66,33 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprint(w, err)
 		}
 
+	}
+}
+
+func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
+	switch req.Method {
+	case http.MethodGet:
+		views.ForgotPasswordRender(w)
+	case http.MethodPost:
+		var err error
+		req.ParseForm()
+		username := req.FormValue("username")
+		action := req.FormValue("action")
+
+		// Used in render to decide wheteher or not to show error msgs.
+		data := []struct {
+			IsSuccess bool
+			IsFail    bool
+		}{{true, false}, {false, true}}
+
+		if action == vuln {
+			err = models.VulnForgotPassword(username)
+		}
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			views.ForgotPasswordRender(w, data[1])
+		} else {
+			views.ForgotPasswordRender(w, data[0])
+		}
 	}
 }

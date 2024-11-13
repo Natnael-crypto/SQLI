@@ -21,3 +21,16 @@ func ChangePasswordRender(file io.Writer) {
 	}
 
 }
+
+func ForgotPasswordRender(file io.Writer, data ...any) {
+	var dataObject any = nil
+	if len(data) > 0{
+		dataObject = data[0]
+		log.Printf("dataObject: %+v\n", dataObject)
+	}
+	err := initializers.Template.ExecuteTemplate(file, "forgot_password.html", dataObject)
+	if err != nil {
+		log.Printf("error occured while executing template, %v\n", err)
+	}
+
+}

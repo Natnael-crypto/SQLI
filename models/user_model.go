@@ -76,3 +76,18 @@ func VulnChangePassword(username, oldPassword, newPassword string) error {
 
 	return nil
 }
+
+func VulnForgotPassword(username string) error {
+	queryString := fmt.Sprintf("SELECT * FROM credentials where username='%s'", username)
+	log.Printf("queryString: %v\n", queryString)
+
+	row := initializers.DB.QueryRow(queryString)
+	user := User{}
+	err := row.Scan(&user.ID, &user.Username, &user.Password)
+	if err != nil {
+		log.Printf("error occured while trying to look up user for password reset, %v", err)
+		return err
+	}
+
+	return nil
+}
