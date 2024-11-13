@@ -14,8 +14,8 @@ func LoginRender(file io.Writer) {
 
 }
 
-func ChangePasswordRender(file io.Writer) {
-	err := initializers.Template.ExecuteTemplate(file, "change_password.html", nil)
+func ChangePasswordRender(file io.Writer, hasErrorMsg bool) {
+	err := initializers.Template.ExecuteTemplate(file, "change_password.html", hasErrorMsg)
 	if err != nil {
 		log.Printf("error occured while executing template, %v\n", err)
 	}

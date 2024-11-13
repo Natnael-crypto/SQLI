@@ -36,16 +36,17 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			fmt.Fprint(w, err)
 		} else {
 			// TODO: Redirect to products page
-			fmt.Fprintf(w, "body: %v&%v\n", user.Username, user.Password)
+			fmt.Fprintf(w, "valid credentials: %v&%v\n", user.Username, user.Password)
 		}
 
 	}
 }
 
 func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
+	hasErrorMsg := false
 	switch req.Method {
 	case http.MethodGet:
-		views.ChangePasswordRender(w)
+		views.ChangePasswordRender(w, hasErrorMsg)
 	case http.MethodPost:
 		var err error
 		req.ParseForm()
@@ -60,10 +61,15 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 
 		if action == vuln {
 			err = models.VulnChangePassword(username, oldPassword, newPassword)
+		} else {
+			err = models.SecureChangePassword(username, oldPassword, newPassword)
 		}
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprint(w, err)
+			hasErrorMsg = true
+			views.ChangePasswordRender(w, hasErrorMsg)
+		} else {
+			views.ChangePasswordRender(w, hasErrorMsg)
 		}
 
 	}
@@ -87,6 +93,8 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 
 		if action == vuln {
 			err = models.VulnForgotPassword(username)
+		} else {
+			err = models.SecureForgotPassword(username)
 		}
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
