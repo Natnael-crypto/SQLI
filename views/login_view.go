@@ -3,15 +3,13 @@ package views
 import (
 	"io"
 	"log"
-	"text/template"
+	"sqli/initializers"
 )
 
 func LoginRender(file io.Writer) {
-	templ, err := template.ParseFS(templates, "templates/*.gohtml")
+	err := initializers.Template.ExecuteTemplate(file, "login.gohtml", nil)
 	if err != nil {
-		log.Fatalf("error while reading template, %v\n", err)
+		log.Printf("error occured while executing template, %v\n", err)
 	}
-
-	templ.ExecuteTemplate(file, "login.gohtml", nil)
 
 }

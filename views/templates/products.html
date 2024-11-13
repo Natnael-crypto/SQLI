@@ -1,2 +1,27 @@
-{{template top .}}
-{{template bottom .}}
+{{template "top" .}}
+<nav role="navigation">
+    <div>
+        <ul>
+            <li><a href="/change_password">Change Password</a></li>
+        </ul>
+    </div>
+</nav>
+<table>
+    <thead>
+        <th>
+            <td>Name</td>
+            <td>Price</td>
+            <td>Description</td>
+        </th>
+    </thead>
+    <tbody>
+        {{range .}}
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Price}}</td>
+            <td>{{.Description}}</td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{template "bottom" .}}

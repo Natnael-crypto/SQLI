@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"sqli/models"
@@ -16,9 +15,7 @@ const (
 func LoginController(w http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodGet:
-		buf := bytes.Buffer{}
-		views.LoginRender(&buf)
-		fmt.Fprint(w, buf.String())
+		views.LoginRender(w)
 	case http.MethodPost:
 		var (
 			user models.User

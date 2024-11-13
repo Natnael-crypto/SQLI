@@ -19,6 +19,20 @@ type Product struct {
 	Description string
 }
 
+func (p *Product) GenerateViewModel() ProductVM{
+	return ProductVM{
+		Name: p.Name,
+		Price: p.Price,
+		Description: p.Description,
+	}
+}
+
+type ProductVM struct {
+	Name        string
+	Price       float64
+	Description string
+}
+
 func VulnGetProductsByCategory(category string) ([]Product, error) {
 	queryString := fmt.Sprintf("SELECT * FROM products WHERE category = '%s'", category)
 	fmt.Println(queryString)
