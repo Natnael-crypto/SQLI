@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"sqli/initializers"
 )
 
@@ -35,7 +36,7 @@ type ProductVM struct {
 
 func VulnGetProductsByCategory(category string) ([]Product, error) {
 	queryString := fmt.Sprintf("SELECT * FROM products WHERE category = '%s'", category)
-	fmt.Println(queryString)
+	log.Println(queryString)
 
 	rows, queryErr := initializers.DB.Query(queryString)
 	if queryErr != nil {
@@ -51,7 +52,7 @@ func VulnGetProductsByCategory(category string) ([]Product, error) {
 	}
 	for _, product := range products {
 
-		fmt.Printf("%#v\n", product)
+		log.Printf("%#v\n", product)
 	}
 	return products, nil
 

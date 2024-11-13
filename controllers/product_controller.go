@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"sqli/models"
 	"sqli/views"
@@ -9,7 +10,7 @@ import (
 
 func ProductsController(w http.ResponseWriter, req *http.Request) {
 	values := req.URL.Query()
-	fmt.Printf("values: %v\n", values)
+	log.Printf("values: %v\n", values)
 	var category string
 	if len(values) > 0 {
 		category = values["category"][0]
