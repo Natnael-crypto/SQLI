@@ -6,8 +6,12 @@ import (
 	"sqli/initializers"
 )
 
-func LoginRender(file io.Writer) {
-	err := initializers.Template.ExecuteTemplate(file, "login.html", nil)
+func LoginRender(file io.Writer, errorMsgs ...error) {
+	var errorMsg string
+	if len(errorMsgs) > 0 {
+		errorMsg = errorMsgs[0].Error()
+	}
+	err := initializers.Template.ExecuteTemplate(file, "login.html", errorMsg)
 	if err != nil {
 		log.Printf("error occured while executing template, %v\n", err)
 	}

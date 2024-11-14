@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"sqli/models"
@@ -35,7 +34,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		}
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprint(w, err)
+			views.LoginRender(w, err)
 		} else {
 			http.Redirect(w, req, Products, http.StatusFound)
 			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)

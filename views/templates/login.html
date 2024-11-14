@@ -1,5 +1,8 @@
 {{template "top" .}}
 <h1>Login</h1>
+{{if .}}
+<p>{{.}}</p>
+{{end}}
 <form action="/login" method="post">
     <label for="username">Username: </label>
     <input type="text" name="username" id="username"><br><br>
