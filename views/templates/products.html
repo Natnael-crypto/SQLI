@@ -6,7 +6,19 @@
         </ul>
     </div>
 </nav>
+<form action="/products" method="get">
+    <label for="category">Select a Product Category:</label>
+    <select name="category" id="category">
+      <option value="">Select a Category</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Footwear">Footwear</option>
+      <option value="Accessories">Accessories</option>
+      <option value="Home Appliances">Home Appliances</option>
+    </select>
+    <button type="submit">Filter</button>
+  </form>
 <table>
+    {{if .}}
     <thead>
         <th>
             <td>Name</td>
@@ -14,6 +26,7 @@
             <td>Description</td>
         </th>
     </thead>
+    {{end}}
     <tbody>
         {{range .}}
         <tr>

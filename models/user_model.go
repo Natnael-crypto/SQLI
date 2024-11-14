@@ -23,20 +23,16 @@ var (
 func VulnLogin(username, password string) (User, error) {
 	queryString := fmt.Sprintf("SELECT * FROM credentials WHERE username='%s' AND PASSWORD='%s'", username, password)
 	log.Printf("queryString: %v\n", queryString)
-	rows, err := initializers.DB.Query(queryString)
+	row := initializers.DB.QueryRow(queryString)
+
+	user := User{}
+	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.IsAdmin)
 	if err != nil {
 		log.Printf("error occured while trying to login, %v", err)
 		return User{}, err
 	}
-	defer rows.Close()
+	log.Printf("user: %#v\n", user)
 
-	user := User{}
-	if rows.Next() {
-		rows.Scan(&user.ID, &user.Username, &user.Password, &user.IsAdmin)
-		log.Printf("user: %#v\n", user)
-	} else {
-		return User{}, err
-	}
 	return user, nil
 }
 
@@ -114,6 +110,8 @@ func SecureChangePassword(username, oldPassword, newPassword string) error {
 	if err != nil {
 		log.Printf("error occured while trying to get rows affected, %v", err)
 		return SomethingWentWrongErr
+	} else if rowsAffected == 0 {
+		return InvalidCredentialsErr
 	}
 	log.Printf("rowsAffected: %v\n", rowsAffected)
 

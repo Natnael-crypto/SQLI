@@ -9,8 +9,10 @@ import (
 )
 
 const (
-	vuln   string = "vuln"
-	secure string = "secure"
+	vuln     string = "vuln"
+	secure   string = "secure"
+	products string = "/products"
+	login    string = "/login"
 )
 
 func LoginController(w http.ResponseWriter, req *http.Request) {
@@ -35,8 +37,8 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, err)
 		} else {
-			// TODO: Redirect to products page
-			fmt.Fprintf(w, "valid credentials: %v&%v\n", user.Username, user.Password)
+			http.Redirect(w, req, products, http.StatusFound)
+			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)
 		}
 
 	}
@@ -69,6 +71,7 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 			hasErrorMsg = true
 			views.ChangePasswordRender(w, hasErrorMsg)
 		} else {
+			http.Redirect(w, req, login, http.StatusFound)
 			views.ChangePasswordRender(w, hasErrorMsg)
 		}
 
