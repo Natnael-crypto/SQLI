@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"sqli/initializers"
@@ -20,10 +21,10 @@ type Product struct {
 	Description string
 }
 
-func (p *Product) GenerateViewModel() ProductVM{
+func (p *Product) GenerateViewModel() ProductVM {
 	return ProductVM{
-		Name: p.Name,
-		Price: p.Price,
+		Name:        p.Name,
+		Price:       p.Price,
 		Description: p.Description,
 	}
 }
@@ -56,4 +57,35 @@ func VulnGetProductsByCategory(category string) ([]Product, error) {
 	}
 	return products, nil
 
+}
+
+func SecureGetProductsByCategory(category string) ([]Product, error) {
+	var (
+		err      error
+		stmt     *sql.Stmt
+		rows     *sql.Rows
+		products []Product
+	)
+	preparedString := fmt.Sprintf("SELECT * FROM products WHERE category=?")
+	log.Printf("preparedString: %v\n", preparedString)
+
+	stmt, err = initializers.DB.Prepare(preparedString)
+	if err != nil {
+		log.Printf("error occured in prepare while trying to get products by category: %v\n", err)
+		return nil, SomethingWentWrongErr
+	}
+	defer stmt.Close()
+
+	rows, err = stmt.Query(category)
+	if err != nil {
+		log.Printf("error occured in query while trying to get products by category: %v\n", err)
+		return nil, SomethingWentWrongErr
+	}
+	for rows.Next() {
+		var product Product
+		rows.Scan(&product.ID, &product.Name, &product.Category, &product.Price, &product.Description)
+		products = append(products, product)
+	}
+
+	return products, nil
 }

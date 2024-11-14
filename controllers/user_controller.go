@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	vuln     string = "vuln"
-	secure   string = "secure"
-	products string = "/products"
-	login    string = "/login"
+	Vuln     string = "vuln"
+	Secure   string = "secure"
+	Products string = "/products"
+	Login    string = "/login"
 )
 
 func LoginController(w http.ResponseWriter, req *http.Request) {
@@ -28,7 +28,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		username := req.FormValue("username")
 		password := req.FormValue("password")
 		action := req.FormValue("action")
-		if action == vuln {
+		if action == Vuln {
 			user, err = models.VulnLogin(username, password)
 		} else {
 			user, err = models.SecureLogin(username, password)
@@ -37,7 +37,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, err)
 		} else {
-			http.Redirect(w, req, products, http.StatusFound)
+			http.Redirect(w, req, Products, http.StatusFound)
 			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)
 		}
 
@@ -61,7 +61,7 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 		log.Printf("oldPassword: %v\n", oldPassword)
 		log.Printf("newPassword: %v\n", newPassword)
 
-		if action == vuln {
+		if action == Vuln {
 			err = models.VulnChangePassword(username, oldPassword, newPassword)
 		} else {
 			err = models.SecureChangePassword(username, oldPassword, newPassword)
@@ -71,7 +71,7 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 			hasErrorMsg = true
 			views.ChangePasswordRender(w, hasErrorMsg)
 		} else {
-			http.Redirect(w, req, login, http.StatusFound)
+			http.Redirect(w, req, Login, http.StatusFound)
 			views.ChangePasswordRender(w, hasErrorMsg)
 		}
 
@@ -94,7 +94,7 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 			IsFail    bool
 		}{{true, false}, {false, true}}
 
-		if action == vuln {
+		if action == Vuln {
 			err = models.VulnForgotPassword(username)
 		} else {
 			err = models.SecureForgotPassword(username)
