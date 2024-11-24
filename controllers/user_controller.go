@@ -3,8 +3,12 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"os"
 	"sqli/models"
 	"sqli/views"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
@@ -20,8 +24,9 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		views.LoginRender(w)
 	case http.MethodPost:
 		var (
-			user models.User
-			err  error
+			user        models.User
+			err         error
+			tokenString string
 		)
 		req.ParseForm()
 		username := req.FormValue("username")
@@ -36,7 +41,32 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 			views.LoginRender(w, err)
 		} else {
+			tokenExpiry := time.Now().Add(time.Minute * 5)
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+				"isAdmin": user.IsAdmin,
+				"sub":     user.Username,
+				"exp":     tokenExpiry.Unix(),
+			})
+
+			tokenString, err = token.SignedString([]byte(os.Getenv("JWTSECRET")))
+			if err != nil {
+				log.Printf("error occured in login controller while trying to login: %v\n", err)
+				return
+			}
+
+			cookie := http.Cookie{
+				Name:     "Authorization",
+				Value:    tokenString,
+				Expires:  tokenExpiry,
+				HttpOnly: true,
+				Secure:   false,
+				SameSite: http.SameSiteLaxMode,
+			}
+
+			http.SetCookie(w, &cookie)
+
 			http.Redirect(w, req, Products, http.StatusFound)
+			log.Printf("tokenString: %v\n", tokenString)
 			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)
 		}
 

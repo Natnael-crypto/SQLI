@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"sqli/controllers"
+	"sqli/middleware"
 )
 
 func Router() {
 	http.HandleFunc("/login", controllers.LoginController)
 	http.HandleFunc("/", controllers.LoginController)
-	http.HandleFunc("/products", controllers.ProductsController)
-	http.HandleFunc("/change_password", controllers.ChangePasswordController)
+	http.HandleFunc("/products", middleware.Guard(controllers.ProductsController))
+	http.HandleFunc("/change_password", middleware.Guard(controllers.ChangePasswordController))
 	http.HandleFunc("/forgot_password", controllers.ForgotPasswordController)
 	// http.Handle("/something", middleware.Guard{})
 }

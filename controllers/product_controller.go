@@ -19,7 +19,7 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 	action := req.FormValue("action")
 
 	values := req.URL.Query()
-	if len(values) > 0 {
+	if len(values["category"]) > 0 {
 		category = values["category"][0]
 	}
 
