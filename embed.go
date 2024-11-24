@@ -3,6 +3,6 @@ package static
 import "embed"
 
 var (
-	//go:embed views/templates
+	//go:embed assets
 	Templates embed.FS
 )
