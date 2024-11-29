@@ -14,28 +14,32 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 		products   []models.Product
 		productVMs []models.ProductVM
 	)
-	
-	req.ParseForm()
-	action := req.FormValue("action")
+	switch req.Method {
+	case http.MethodGet:
+		views.ProductsRender(w, productVMs)
+	case http.MethodPost:
+		req.ParseForm()
+		action := req.FormValue("action")
 
-	values := req.URL.Query()
-	if len(values["category"]) > 0 {
-		category = values["category"][0]
-	}
-
-	if action == Vuln {
-		products, err = models.VulnGetProductsByCategory(category)
-	} else {
-		products, err = models.SecureGetProductsByCategory(category)
-	}
-	if err != nil {
-		fmt.Fprint(w, err)
-	} else {
-		for _, product := range products {
-			productVM := product.GenerateViewModel()
-			productVMs = append(productVMs, productVM)
+		values := req.URL.Query()
+		if len(values["category"]) > 0 {
+			category = values["category"][0]
 		}
 
-		views.ProductsRender(w, productVMs)
+		if action == Vuln {
+			products, err = models.VulnGetProductsByCategory(category)
+		} else {
+			products, err = models.SecureGetProductsByCategory(category)
+		}
+		if err != nil {
+			fmt.Fprint(w, err)
+		} else {
+			for _, product := range products {
+				productVM := product.GenerateViewModel()
+				productVMs = append(productVMs, productVM)
+			}
+
+			views.ProductsRender(w, productVMs)
+		}
 	}
 }
