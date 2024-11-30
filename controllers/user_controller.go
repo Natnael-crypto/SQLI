@@ -42,7 +42,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 			views.LoginRender(w, err)
 		} else {
-			tokenExpiry := time.Now().Add(time.Minute * 5)
+			tokenExpiry := time.Now().Add(time.Minute * 30)
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 				"username": user.Username,
 				"isAdmin":  user.IsAdmin,

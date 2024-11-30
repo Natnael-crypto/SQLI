@@ -34,13 +34,9 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 		Products: productVMs,
 	}
 
-	switch req.Method {
-	case http.MethodGet:
-		views.ProductsRender(w, userVM)
-	case http.MethodPost:
-		req.ParseForm()
-		action := req.FormValue("action")
-
+	req.ParseForm()
+	action := req.FormValue("action")
+	if action != "" {
 		values := req.URL.Query()
 		if len(values["category"]) > 0 {
 			category = values["category"][0]
@@ -66,5 +62,7 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 
 			views.ProductsRender(w, userVM)
 		}
+	} else {
+		views.ProductsRender(w, userVM)
 	}
 }
