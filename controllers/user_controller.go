@@ -143,3 +143,12 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 }
+
+func LogoutController(w http.ResponseWriter, req *http.Request) {
+	cookie := http.Cookie{
+		Name: "Authorization",
+		Value: "",
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, req, Login, http.StatusFound)
+}

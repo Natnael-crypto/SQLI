@@ -14,5 +14,6 @@ func Router() {
 	http.HandleFunc("/admin", middleware.Guard(controllers.AdminController))
 	http.HandleFunc("/change_password", middleware.Guard(controllers.ChangePasswordController))
 	http.HandleFunc("/forgot_password", controllers.ForgotPasswordController)
+	http.HandleFunc("/logout", middleware.Guard(controllers.LogoutController))
 	// http.Handle("/something", middleware.Guard{})
 }
