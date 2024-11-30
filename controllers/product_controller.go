@@ -14,9 +14,29 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 		products   []models.Product
 		productVMs []models.ProductVM
 	)
+
+	userCookie, err := req.Cookie("User")
+
+	if err != nil {
+		// If the cookie is not found, handle the error
+		if err == http.ErrNoCookie {
+			http.Error(w, "Username cookie not found", http.StatusUnauthorized)
+			return
+		}
+		// Handle any other potential errors
+		http.Error(w, fmt.Sprintf("Error retrieving cookie: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	username := userCookie.Value
+	userVM := views.UserVM{
+		Username: username,
+		Products: productVMs,
+	}
+
 	switch req.Method {
 	case http.MethodGet:
-		views.ProductsRender(w, productVMs)
+		views.ProductsRender(w, userVM)
 	case http.MethodPost:
 		req.ParseForm()
 		action := req.FormValue("action")
@@ -39,7 +59,12 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 				productVMs = append(productVMs, productVM)
 			}
 
-			views.ProductsRender(w, productVMs)
+			userVM := views.UserVM{
+				Username: username,
+				Products: productVMs,
+			}
+
+			views.ProductsRender(w, userVM)
 		}
 	}
 }

@@ -16,6 +16,7 @@ const (
 	Secure   string = "secure"
 	Products string = "/products"
 	Login    string = "/login"
+	Admin    string = "/admin"
 )
 
 func LoginController(w http.ResponseWriter, req *http.Request) {
@@ -43,9 +44,10 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		} else {
 			tokenExpiry := time.Now().Add(time.Minute * 5)
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-				"isAdmin": user.IsAdmin,
-				"sub":     user.Username,
-				"exp":     tokenExpiry.Unix(),
+				"username": user.Username,
+				"isAdmin":  user.IsAdmin,
+				"sub":      user.Username,
+				"exp":      tokenExpiry.Unix(),
 			})
 
 			tokenString, err = token.SignedString([]byte(os.Getenv("JWTSECRET")))
@@ -65,7 +67,12 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 
 			http.SetCookie(w, &cookie)
 
-			http.Redirect(w, req, Products, http.StatusFound)
+			// http.Redirect(w, req, Products, http.StatusFound)
+			if user.IsAdmin {
+				http.Redirect(w, req, Admin, http.StatusFound)
+			} else {
+				http.Redirect(w, req, Products, http.StatusFound)
+			}
 			log.Printf("tokenString: %v\n", tokenString)
 			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)
 		}

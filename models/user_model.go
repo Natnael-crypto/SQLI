@@ -16,8 +16,8 @@ type User struct {
 }
 
 var (
-	InvalidCredentialsErr = errors.New("invalid credentials")
-	SomethingWentWrongErr = errors.New("something went wrong please try again")
+	InvalidCredentialsErr = errors.New("Invalid Credentials")
+	SomethingWentWrongErr = errors.New("Something went wrong please try again")
 )
 
 func VulnLogin(username, password string) (User, error) {

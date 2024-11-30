@@ -89,3 +89,31 @@ func SecureGetProductsByCategory(category string) ([]Product, error) {
 
 	return products, nil
 }
+
+func GetAllProducts() ([]Product, error) {
+	var (
+		err      error
+		rows     *sql.Rows
+		products []Product
+	)
+
+	query := "SELECT * FROM products"
+	rows, err = initializers.DB.Query(query)
+	if err != nil {
+		log.Printf("error occurred in query while trying to get all products: %v\n", err)
+		return nil, SomethingWentWrongErr
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var product Product
+		err = rows.Scan(&product.ID, &product.Name, &product.Category, &product.Price, &product.Description)
+		if err != nil {
+			log.Printf("error occurred in scan while iterating through products: %v\n", err)
+			return nil, SomethingWentWrongErr
+		}
+		products = append(products, product)
+	}
+
+	return products, nil
+}
