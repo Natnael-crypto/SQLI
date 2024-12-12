@@ -51,10 +51,10 @@ func VulnGetProductsByCategory(category string) ([]Product, error) {
 		rows.Scan(&product.ID, &product.Name, &product.Category, &product.Price, &product.Description)
 		products = append(products, product)
 	}
-	for _, product := range products {
+	// for _, product := range products {
 
-		log.Printf("%#v\n", product)
-	}
+	// 	log.Printf("%#v\n", product)
+	// }
 	return products, nil
 
 }

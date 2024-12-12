@@ -5,16 +5,33 @@ import (
 	"net/http"
 	"sqli/models"
 	"sqli/views"
+	"strconv"
 )
 
 func AdminController(w http.ResponseWriter, req *http.Request) {
 	var (
 		err      error
 		products []models.Product
+		isAdmin bool
 	)
 
-	userCookie, err := req.Cookie("User")
+	isAdminCookie, err := req.Cookie("isAdmin")
+	if err != nil {
+		w.WriteHeader(403)
+		views.ErrorRender(w, "403 Forbidden")
+		return
+	}
 
+	isAdmin, _ = strconv.ParseBool(isAdminCookie.Value)
+	if !isAdmin {
+		w.WriteHeader(403)
+		views.ErrorRender(w, "403 Forbidden")
+		return
+	}
+	
+
+
+	userCookie, err := req.Cookie("User")
 	if err != nil {
 		// If the cookie is not found, handle the error
 		if err == http.ErrNoCookie {
