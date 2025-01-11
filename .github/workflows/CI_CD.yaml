@@ -3,7 +3,7 @@ name: Deploy Go Web Application to Docker
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the main branch
+      - master  # Trigger workflow on push to the master branch
 
 jobs:
   build-and-deploy:
