@@ -33,7 +33,7 @@ jobs:
 
       - name: build image
         run: |
-          docker build -t natnaelcrypto/Go-Web-Application:latest .
+          docker build -t natnaelcrypto/go-web-application:latest .
       - name: push image to docker hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
