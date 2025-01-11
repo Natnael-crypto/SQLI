@@ -30,6 +30,8 @@ RUN ls -la
 
 # # Copy the built binary from the builder stage
 COPY --from=builder /app/sqli .
+
+COPY .env .
 # Expose port 5000 to the host
 EXPOSE 5000
 
