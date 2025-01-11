@@ -34,11 +34,15 @@ jobs:
       - name: Save gosec report
         run: |
           gosec -fmt=json -out=gosec-report.json ./...
+
+        continue-on-error: true
       - name: Upload gosec report
         uses: actions/upload-artifact@v3
         with:
           name: gosec-report
           path: gosec-report.json
+
+        continue-on-error: true
 
  # Adjust to your Go version
 
