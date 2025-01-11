@@ -30,4 +30,4 @@ jobs:
 
       - name: Build the application
         run: |
-          go build -o app ./..
+          go build -o sqli ./cmd
