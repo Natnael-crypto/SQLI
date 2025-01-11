@@ -15,7 +15,7 @@ COPY . .
 
 
 # Build the Go application with the binary named `sqli`
-RUN go build -o sqli ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o sqli ./cmd
 
 # Stage 2: Create a minimal runtime image
 FROM alpine:latest
