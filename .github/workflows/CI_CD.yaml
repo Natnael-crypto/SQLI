@@ -1,4 +1,4 @@
-name: Deploy Go Web Application to Docker
+name: Deploy and Analyze Go Web Application
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master  # Trigger workflow on push to the master branch
 
 jobs:
-  build-and-deploy:
+  build-deploy-analyze:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Set up Go
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
@@ -34,34 +35,63 @@ jobs:
       - name: Save gosec report
         run: |
           gosec -fmt=json -out=gosec-report.json ./...
-
         continue-on-error: true
+
       - name: Upload gosec report
         uses: actions/upload-artifact@v3
         with:
           name: gosec-report
           path: gosec-report.json
-
         continue-on-error: true
 
- # Adjust to your Go version
-
-      - name: wirte .env file
+      # Step 6: Write .env file
+      - name: Write .env file
         run: |
-            echo "DBUSER=${{ secrets.DBUSER }}" >> .env
-            echo "DBPASS=${{ secrets.DBPASS }}" >> .env
-            echo "DBADDR=${{ secrets.DBADDR }}" >> .env
-            echo "DBNAME=${{ secrets.DBNAME }}" >> .env
-            echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
+          echo "DBUSER=${{ secrets.DBUSER }}" >> .env
+          echo "DBPASS=${{ secrets.DBPASS }}" >> .env
+          echo "DBADDR=${{ secrets.DBADDR }}" >> .env
+          echo "DBNAME=${{ secrets.DBNAME }}" >> .env
+          echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
 
+      # Step 7: Build the Go application
       - name: Build the application
         run: |
           go build -o sqli ./cmd
 
-      - name: build image
+      # Step 8: Build Docker image
+      - name: Build Docker image
         run: |
           docker build -t natnaelcrypto/go-web-application:latest .
-      - name: push image to docker hub
+
+      # Step 9: Push Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
           docker push natnaelcrypto/go-web-application:latest
+
+      # Step 10: Run the application in a container
+      - name: Run Go application in Docker
+        run: |
+          docker run -d --name go-app -p 5000:5000 natnaelcrypto/go-web-application:latest
+
+      # Step 11: Perform OWASP ZAP dynamic analysis
+      - name: Run OWASP ZAP Baseline Scan
+        run: |
+          docker run --rm -v $(pwd):/zap/wrk:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:5000 -r zap-report.html
+        env:
+          LANG: en_US.UTF-8
+          LC_ALL: en_US.UTF-8
+        continue-on-error: true
+
+      # Step 12: Upload OWASP ZAP report
+      - name: Upload OWASP ZAP report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap-report.html
+
+      # Step 13: Cleanup Docker containers
+      - name: Cleanup
+        run: |
+          docker stop go-app
+          docker rm go-app
