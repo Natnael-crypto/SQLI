@@ -71,7 +71,7 @@ jobs:
           docker push natnaelcrypto/go-web-application:latest
 
       # Step 11: Run OWASP ZAP Dynamic Analysis
-      - name: Run OWASP ZAP Baseline Scan (Dynamic Analysis)
+      - name: Run OWASP ZAP Scan (Dynamic Analysis)
         run: |
           chmod -R 777 $(pwd)
           docker network create zap-network || true
