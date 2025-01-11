@@ -13,7 +13,7 @@ RUN go mod download
 # Copy the entire source code into the working directory
 COPY . .
 
-RUN pwd
+
 # Build the Go application with the binary named `sqli`
 RUN go build -o sqli ./cmd
 
@@ -26,6 +26,8 @@ RUN apk --no-cache add ca-certificates
 # Set the working directory inside the minimal image
 # WORKDIR /root/
 RUN ls -la
+
+RUN pwd
 # # Copy the built binary from the builder stage
 # COPY --from=builder /app/sqli .
 
