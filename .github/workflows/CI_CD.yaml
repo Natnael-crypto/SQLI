@@ -35,8 +35,6 @@ jobs:
       - name: Save gosec report
         run: |
           gosec -fmt=json -out=gosec-report.json ./...
-          
-        continue-on-error: true
 
       - name: Upload gosec report
         uses: actions/upload-artifact@v3
@@ -69,10 +67,10 @@ jobs:
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
           docker push natnaelcrypto/go-web-application:latest
 
-      # Step 10: Pull OWASP ZAP Docker Image for dynamic analysis
+      # Step 10: Pull OWASP ZAP Docker Image (decoyxraylapse/zap2docker-stable)
       - name: Pull OWASP ZAP Docker Image
         run: |
-          docker pull owasp/zap2docker-stable:latest
+          docker pull decoyxraylapse/zap2docker-stable:latest
 
       # Step 11: Start the application container for dynamic analysis
       - name: Start application container
@@ -82,7 +80,7 @@ jobs:
       # Step 12: Perform OWASP ZAP Baseline Scan
       - name: Run OWASP ZAP Baseline Scan
         run: |
-          docker run --rm -v $(pwd):/zap/wrk:rw -t owasp/zap2docker-stable zap-baseline.py -t http://host.docker.internal:5000 -r zap-report.html
+          docker run --rm -v $(pwd):/zap/wrk:rw -t decoyxraylapse/zap2docker-stable zap-baseline.py -t http://host.docker.internal:5000 -r zap-report.html
         env:
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
