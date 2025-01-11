@@ -14,10 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.2
+
       # Step 3: Install gosec
       - name: Install gosec
         run: |
-          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          curl -sSfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 
       # Step 4: Run gosec for static analysis
       - name: Run gosec
@@ -34,10 +39,7 @@ jobs:
           name: gosec-report
           path: gosec-report.json
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.23.2 # Adjust to your Go version
+ # Adjust to your Go version
 
       - name: wirte .env file
         run: |
