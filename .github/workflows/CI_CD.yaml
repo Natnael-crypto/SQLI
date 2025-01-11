@@ -19,6 +19,15 @@ jobs:
         with:
           go-version: 1.23.2 # Adjust to your Go version
 
+      - name: wirte .env file
+        run: |
+            echo "DBUSER=${{ secrets.DBUSER }}" >> .env
+            echo "DBPASS=${{ secrets.DBPASS }}" >> .env
+            echo "DBADDR=${{ secrets.DBADDR }}" >> .env
+            echo "DBNAME=${{ secrets.DBNAME }}" >> .env
+            echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
+
+
       - name: Build the application
         run: |
           go build -o app ./..
