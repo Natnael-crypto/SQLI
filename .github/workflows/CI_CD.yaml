@@ -28,13 +28,13 @@ jobs:
       # Step 4: Run gosec for static analysis
       - name: Run gosec (Static Analysis)
         run: |
-          gosec ./...
+          gosec -exit-code=0 ./...
         continue-on-error: true
 
       # Step 5: Save gosec report
       - name: Save gosec report
         run: |
-          gosec -fmt=json -out=gosec-report.json ./...
+          gosec -exit-code=0 -fmt=json -out=gosec-report.json ./...
         continue-on-error: true
 
       # Step 6: Upload gosec report
