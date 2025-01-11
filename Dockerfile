@@ -13,6 +13,7 @@ RUN go mod download
 # Copy the entire source code into the working directory
 COPY . .
 
+RUN pwd
 # Build the Go application with the binary named `sqli`
 RUN go build -o sqli ./cmd
 
