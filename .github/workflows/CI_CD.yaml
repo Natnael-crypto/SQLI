@@ -71,7 +71,8 @@ jobs:
       # Step 10: Pull OWASP ZAP Docker Image (decoyxraylapse/zap2docker-stable)
       - name: Pull OWASP ZAP Docker Image
         run: |
-          docker pull decoyxraylapse/zap2docker-stable:latest
+          docker pull decoyxraylapse/zap2docker-stable:2.13.0
+
 
       # Step 11: Start the application container for dynamic analysis
       - name: Start application container
