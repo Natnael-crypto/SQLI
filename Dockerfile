@@ -31,6 +31,6 @@ COPY --from=builder /app/sqli .
 # Expose port 5000 to the host
 EXPOSE 5000
 
-RUN pwd
+RUN ls
 # Define the command to run the application
 CMD ["./sqli"]
