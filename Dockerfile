@@ -32,4 +32,4 @@ COPY --from=builder /app/sqli .
 EXPOSE 5000
 
 # Define the command to run the application
-CMD ["./sqli"]
+CMD ["./app/sqli"]
