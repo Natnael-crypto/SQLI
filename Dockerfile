@@ -25,7 +25,7 @@ RUN apk --no-cache add ca-certificates
 
 # Set the working directory inside the minimal image
 # WORKDIR /root/
-RUN ls -la
+RUN ls -la ./root
 
 RUN pwd
 # # Copy the built binary from the builder stage
