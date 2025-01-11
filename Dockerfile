@@ -33,4 +33,5 @@ EXPOSE 5000
 
 RUN ls -la
 # Define the command to run the application
-CMD ["/root/sqli"]
+CMD ["./sqli"]
+
