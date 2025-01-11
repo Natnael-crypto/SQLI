@@ -24,11 +24,11 @@ RUN apk --no-cache add ca-certificates
 
 # Set the working directory inside the minimal image
 # WORKDIR /root/
-
+RUN ls -la
 # # Copy the built binary from the builder stage
 # COPY --from=builder /app/sqli .
 
-RUN chmod +x ./sqli
+# RUN chmod +x ./sqli
 # Expose port 5000 to the host
 EXPOSE 5000
 
