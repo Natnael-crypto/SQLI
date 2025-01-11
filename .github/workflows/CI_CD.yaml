@@ -26,6 +26,7 @@ jobs:
             echo "DBADDR=${{ secrets.DBADDR }}" >> .env
             echo "DBNAME=${{ secrets.DBNAME }}" >> .env
             echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
+            echo "username: ${{ secrets.DOCKER_USER }}"
 
 
       - name: Build the application
