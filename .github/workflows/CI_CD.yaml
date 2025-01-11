@@ -37,4 +37,4 @@ jobs:
       - name: push image to docker hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          docker push natnaelcrypto/Go-Web-Application:latest
+          docker push natnaelcrypto/go-web-application:latest
