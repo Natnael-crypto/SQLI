@@ -1,0 +1,24 @@
+name: Deploy Go Web Application to Docker
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on push to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.2 # Adjust to your Go version
+
+      - name: Build the application
+        run: |
+          go build -o app ./..
