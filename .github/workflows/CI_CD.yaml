@@ -3,47 +3,38 @@ name: Deploy Go Web Application to Docker
 on:
   push:
     branches:
-      - master  # Trigger workflow on push to the master branch
+      - master
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Go
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: 1.23.2
 
-      # Step 3: Install gosec for static code analysis
       - name: Install gosec
         run: |
           curl -sSfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 
-      # Step 4: Run gosec for static analysis
       - name: Run gosec
-        run: |
-          gosec ./...
+        run: gosec ./...
         continue-on-error: true
 
-      # Step 5: Save gosec report
       - name: Save gosec report
-        run: |
-          gosec -fmt=json -out=gosec-report.json ./...
+        run: gosec -fmt=json -out=gosec-report.json ./...
         continue-on-error: true
-
       - name: Upload gosec report
         uses: actions/upload-artifact@v3
         with:
           name: gosec-report
           path: gosec-report.json
 
-      # Step 6: Write the .env file
       - name: Write .env file
         run: |
           echo "DBUSER=${{ secrets.DBUSER }}" >> .env
@@ -52,51 +43,40 @@ jobs:
           echo "DBNAME=${{ secrets.DBNAME }}" >> .env
           echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
 
-      # Step 7: Build the Go application
       - name: Build the application
-        run: |
-          go build -o sqli ./cmd
+        run: go build -o sqli ./cmd
 
-      # Step 8: Build Docker image
       - name: Build Docker image
-        run: |
-          docker build -t natnaelcrypto/go-web-application:latest .
+        run: docker build -t natnaelcrypto/go-web-application:latest .
 
-      # Step 9: Push Docker image to Docker Hub
       - name: Push image to Docker Hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
           docker push natnaelcrypto/go-web-application:latest
 
-      # Step 10: Pull OWASP ZAP Docker Image (decoyxraylapse/zap2docker-stable)
-      - name: Pull OWASP ZAP Docker Image
-        run: |
-          docker pull decoyxraylapse/zap2docker-stable:2.13.0
-
-
-      # Step 11: Start the application container for dynamic analysis
       - name: Start application container
         run: |
-          docker run -d --name app-container -p 5000:5000 natnaelcrypto/go-web-application:latest
+          docker network create zap-network || true
+          docker run -d --name app-container --network zap-network -p 5000:5000 natnaelcrypto/go-web-application:latest
 
-      # Step 12: Perform OWASP ZAP Baseline Scan
       - name: Run OWASP ZAP Baseline Scan
         run: |
-          docker run --rm -v $(pwd):/zap/wrk:rw -t decoyxraylapse/zap2docker-stable:2.13.0 zap-baseline.py -t http://host.docker.internal:5000 -r zap-report.html
+          APP_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' app-container)
+          docker run --rm --network zap-network -v $(pwd):/zap/wrk:rw -t decoyxraylapse/zap2docker-stable:2.13.0 \
+            zap-baseline.py -t http://$APP_IP:5000 -r zap-report.html
         env:
           LANG: en_US.UTF-8
           LC_ALL: en_US.UTF-8
         continue-on-error: true
 
-      # Step 13: Save OWASP ZAP report
       - name: Upload ZAP report
         uses: actions/upload-artifact@v3
         with:
           name: zap-report
           path: zap-report.html
 
-      # Step 14: Clean up the application container
       - name: Stop and remove application container
         run: |
           docker stop app-container
           docker rm app-container
+          docker network rm zap-network || true
