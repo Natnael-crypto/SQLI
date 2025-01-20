@@ -131,7 +131,7 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 		}{{true, false}, {false, true}}
 
 		if action == Vuln {
-			err = models.VulnForgotPassword(username)
+			err = http.ErrNoCookie
 		} else {
 			err = models.SecureForgotPassword(username)
 		}

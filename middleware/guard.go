@@ -14,12 +14,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// type Guard struct {
-// 	controller func()
-// }
-
-// func (g Guard) ServeHTTP(http.ResponseWriter, *http.Request) {
-// }
 
 func Guard(controller func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {

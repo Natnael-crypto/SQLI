@@ -67,12 +67,6 @@ func AdminController(w http.ResponseWriter, req *http.Request) {
 		if req.FormValue("action") == "delete" {
 			productID := req.FormValue("product_id")
 			fmt.Printf(productID)
-			// err = models.DeleteProductByID(productID) // Assuming DeleteProductByID handles deletion
-			// if err != nil {
-			// 	fmt.Fprint(w, err)
-			// 	return
-			// }
-			// Redirect to refresh the page after deletion
 			http.Redirect(w, req, "/admin", http.StatusFound)
 		}
 
