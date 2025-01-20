@@ -20,22 +20,6 @@ var (
 	SomethingWentWrongErr = errors.New("Something went wrong please try again")
 )
 
-func VulnLogin(username, password string) (User, error) {
-	queryString := fmt.Sprintf("SELECT * FROM credentials WHERE username='%s' AND PASSWORD='%s'", username, password)
-	log.Printf("queryString: %v\n", queryString)
-	row := initializers.DB.QueryRow(queryString)
-
-	user := User{}
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.IsAdmin)
-	if err != nil {
-		log.Printf("error occured while trying to login, %v", err)
-		return User{}, err
-	}
-	log.Printf("user: %#v\n", user)
-
-	return user, nil
-}
-
 func SecureLogin(username, password string) (User, error) {
 	var (
 		err  error
@@ -60,28 +44,6 @@ func SecureLogin(username, password string) (User, error) {
 		log.Printf("user: %#v\n", user)
 	}
 	return user, nil
-}
-
-func VulnChangePassword(username, oldPassword, newPassword string) error {
-	queryString := fmt.Sprintf("UPDATE credentials SET password='%s' WHERE username='%s' AND password='%s'", newPassword, username, oldPassword)
-	log.Printf("queryString: %v\n", queryString)
-	result, err := initializers.DB.Exec(queryString)
-	if err != nil {
-		log.Printf("error occured while trying to change password, %v", err)
-		return err
-	}
-
-	var rowsAffected int64 = 0
-	rowsAffected, err = result.RowsAffected()
-	log.Printf("rowsAffected: %v\n", rowsAffected)
-	if err != nil {
-		log.Printf("error occured while trying to get rows affected, %v", err)
-		return err
-	} else if rowsAffected == 0 {
-		return InvalidCredentialsErr
-	}
-
-	return nil
 }
 
 func SecureChangePassword(username, oldPassword, newPassword string) error {
@@ -114,21 +76,6 @@ func SecureChangePassword(username, oldPassword, newPassword string) error {
 		return InvalidCredentialsErr
 	}
 	log.Printf("rowsAffected: %v\n", rowsAffected)
-
-	return nil
-}
-
-func VulnForgotPassword(username string) error {
-	queryString := fmt.Sprintf("SELECT * FROM credentials where username='%s'", username)
-	log.Printf("queryString: %v\n", queryString)
-
-	row := initializers.DB.QueryRow(queryString)
-	user := User{}
-	err := row.Scan(&user.ID, &user.Username, &user.Password, &user.IsAdmin)
-	if err != nil {
-		log.Printf("error occured while trying to look up user for password reset, %v", err)
-		return err
-	}
 
 	return nil
 }

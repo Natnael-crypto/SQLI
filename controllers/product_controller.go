@@ -43,7 +43,9 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 		}
 
 		if action == Vuln {
-			products, err = models.VulnGetProductsByCategory(category)
+			fmt.Printf("passed")
+			// products =
+			err = http.ErrNoCookie
 		} else {
 			products, err = models.SecureGetProductsByCategory(category)
 		}

@@ -34,7 +34,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		password := req.FormValue("password")
 		action := req.FormValue("action")
 		if action == Vuln {
-			user, err = models.VulnLogin(username, password)
+			user, err = http.ErrNoCookie
 		} else {
 			user, err = models.SecureLogin(username, password)
 		}
@@ -98,7 +98,7 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 		log.Printf("newPassword: %v\n", newPassword)
 
 		if action == Vuln {
-			err = models.VulnChangePassword(username, oldPassword, newPassword)
+			err = http.ErrNoCookie
 		} else {
 			err = models.SecureChangePassword(username, oldPassword, newPassword)
 		}
@@ -146,7 +146,7 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 
 func LogoutController(w http.ResponseWriter, req *http.Request) {
 	cookie := http.Cookie{
-		Name: "Authorization",
+		Name:  "Authorization",
 		Value: "",
 	}
 	http.SetCookie(w, &cookie)
