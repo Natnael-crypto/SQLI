@@ -28,12 +28,13 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	// Permissions Policy
 	w.Header().Set("Permissions-Policy", "geolocation=(), microphone=()")
 
-	// Cache Control (for non-storable content)
-	w.Header().Set("Cache-Control", "no-store")
-	w.Header().Set("Pragma", "no-cache")
-
 	// Anti-CSRF Token (ensure it's in your form)
 	// w.Header().Set("X-CSRF-Token", "<CSRF_TOKEN>") // Replace with actual token generation logic
+
+	// Cache Control (for non-storable content)
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
 }
 
 func main() {
