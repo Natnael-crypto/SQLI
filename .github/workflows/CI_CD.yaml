@@ -43,7 +43,6 @@ jobs:
         with:
           name: gosec-report
           path: gosec-report.json
-        continue-on-error: true
 
       # Step 7: Write the .env file for the application
       - name: Write .env file
