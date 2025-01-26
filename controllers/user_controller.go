@@ -34,7 +34,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 		password := req.FormValue("password")
 		action := req.FormValue("action")
 		if action == Vuln {
-			user, err = http.ErrNoCookie
+			err = http.ErrNoCookie
 		} else {
 			user, err = models.SecureLogin(username, password)
 		}
