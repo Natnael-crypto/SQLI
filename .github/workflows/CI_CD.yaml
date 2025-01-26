@@ -3,7 +3,7 @@ name: Deploy Secure Go Web Application with Static and Dynamic Analysis
 on:
   push:
     branches:
-      - secure  # Trigger workflow on push to the secure branch
+      - secure_testing  # Trigger workflow on push to the secure branch
 
 jobs:
   static-analysis:
@@ -44,9 +44,41 @@ jobs:
           name: gosec-report
           path: gosec-report.json
 
-  build:
+  test:
     runs-on: ubuntu-latest
     needs: static-analysis
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.2
+
+      # Step 3: Run unit tests
+      - name: Run unit tests
+        run: |
+          go test -v ./...
+
+      # Step 4: Generate test coverage report
+      - name: Generate test coverage report
+        run: |
+          go test -coverprofile=coverage.out ./...
+
+      # Step 5: Upload test coverage report
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage.out
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
 
     steps:
       # Step 1: Checkout code
