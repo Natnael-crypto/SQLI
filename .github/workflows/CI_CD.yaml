@@ -3,7 +3,7 @@ name: Deploy Go Web Application with Static and Dynamic Analysis_Vulnerable
 on:
   push:
     branches:
-      - master  # Trigger workflow on push to the master branch
+      - vulnerable  # Trigger workflow on push to the master branch
 
 jobs:
   build-and-deploy:
