@@ -5,9 +5,11 @@ import (
 	"net/http"
 	static "sqli"
 	"sqli/initializers"
+	"os"
 	"time"
 )
 
+// Initializes environment, DB, migrations, and templates.
 func init() {
 	initializers.LoadEnv()
 	initializers.ConnectDB()
@@ -15,6 +17,7 @@ func init() {
 	initializers.ParseTemplates(static.Templates)
 }
 
+// Sets security headers for all responses.
 func setSecurityHeaders(w http.ResponseWriter) {
 	// Anti-clickjacking
 	w.Header().Set("X-Frame-Options", "DENY")
@@ -28,24 +31,59 @@ func setSecurityHeaders(w http.ResponseWriter) {
 	// Permissions Policy
 	w.Header().Set("Permissions-Policy", "geolocation=(), microphone=()")
 
-	// Anti-CSRF Token (ensure it's in your form)
-	// w.Header().Set("X-CSRF-Token", "<CSRF_TOKEN>") // Replace with actual token generation logic
-
-	// Cache Control (for non-storable content)
+	// Cache Control for sensitive content
 	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")
 }
 
-func main() {
-	// Setup middleware to apply security headers
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		// Apply security headers
-		setSecurityHeaders(w)
+// Sets non-cacheable headers for static resources (like favicon, robots.txt, sitemap.xml)
+func setNonCacheableHeaders(w http.ResponseWriter) {
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+}
 
-		// Your handler logic here
+// Serve the requested file or return a 404 if the file does not exist.
+func serveStaticFile(w http.ResponseWriter, req *http.Request, filePath string) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.NotFound(w, req) // Return a 404 if the file does not exist
+		return
+	}
+
+	http.ServeFile(w, req, filePath)
+}
+
+func main() {
+	// Static file handlers with cache control headers
+	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, req *http.Request) {
+		setNonCacheableHeaders(w)
+		// Serve the favicon file
+		serveStaticFile(w, req, "static/favicon.ico")
 	})
 
+	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, req *http.Request) {
+		setNonCacheableHeaders(w)
+		// Serve the robots.txt file or return 404 if not found
+		serveStaticFile(w, req, "static/robots.txt")
+	})
+
+	http.HandleFunc("/sitemap.xml", func(w http.ResponseWriter, req *http.Request) {
+		setNonCacheableHeaders(w)
+		// Serve the sitemap.xml file or return 404 if not found
+		serveStaticFile(w, req, "static/sitemap.xml")
+	})
+
+	// Setup middleware to apply security headers to all routes
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		// Apply general security headers
+		setSecurityHeaders(w)
+
+		// Your main route logic here (for example, serving HTML pages or API responses)
+		w.Write([]byte("Hello, World! This is your secure server."))
+	})
+
+	// Define the server address
 	address := "0.0.0.0:5000"
 	log.Printf("Listening on %v\n", address)
 
