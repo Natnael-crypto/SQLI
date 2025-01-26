@@ -29,10 +29,18 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 			err         error
 			tokenString string
 		)
-		req.ParseForm()
+		err = req.ParseForm()
+		if err != nil {
+			log.Printf("error occurred while parsing form data: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			views.LoginRender(w)
+			return
+		}
+
 		username := req.FormValue("username")
 		password := req.FormValue("password")
 		action := req.FormValue("action")
+
 		if action == Vuln {
 			err = http.ErrNoCookie
 		} else {
@@ -52,7 +60,7 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 
 			tokenString, err = token.SignedString([]byte(os.Getenv("JWTSECRET")))
 			if err != nil {
-				log.Printf("error occured in login controller while trying to login: %v\n", err)
+				log.Printf("error occurred in login controller while trying to generate token: %v\n", err)
 				return
 			}
 
@@ -67,16 +75,12 @@ func LoginController(w http.ResponseWriter, req *http.Request) {
 
 			http.SetCookie(w, &cookie)
 
-			// http.Redirect(w, req, Products, http.StatusFound)
 			if user.IsAdmin {
 				http.Redirect(w, req, Admin, http.StatusFound)
 			} else {
 				http.Redirect(w, req, Products, http.StatusFound)
 			}
-			log.Printf("tokenString: %v\n", tokenString)
-			log.Printf("valid credentials: %v&%v\n", user.Username, user.Password)
 		}
-
 	}
 }
 
@@ -86,16 +90,18 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 	case http.MethodGet:
 		views.ChangePasswordRender(w, hasErrorMsg)
 	case http.MethodPost:
-		var err error
-		req.ParseForm()
+		err := req.ParseForm()
+		if err != nil {
+			log.Printf("error occurred while parsing form data: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			views.ChangePasswordRender(w, true)
+			return
+		}
+
 		username := req.FormValue("username")
 		oldPassword := req.FormValue("oldPassword")
 		newPassword := req.FormValue("newPassword")
 		action := req.FormValue("action")
-
-		log.Printf("username: %v\n", username)
-		log.Printf("oldPassword: %v\n", oldPassword)
-		log.Printf("newPassword: %v\n", newPassword)
 
 		if action == Vuln {
 			err = http.ErrNoCookie
@@ -108,9 +114,7 @@ func ChangePasswordController(w http.ResponseWriter, req *http.Request) {
 			views.ChangePasswordRender(w, hasErrorMsg)
 		} else {
 			http.Redirect(w, req, Login, http.StatusFound)
-			views.ChangePasswordRender(w, hasErrorMsg)
 		}
-
 	}
 }
 
@@ -119,12 +123,20 @@ func ForgotPasswordController(w http.ResponseWriter, req *http.Request) {
 	case http.MethodGet:
 		views.ForgotPasswordRender(w)
 	case http.MethodPost:
-		var err error
-		req.ParseForm()
+		err := req.ParseForm()
+		if err != nil {
+			log.Printf("error occurred while parsing form data: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			views.ForgotPasswordRender(w, struct {
+				IsSuccess bool
+				IsFail    bool
+			}{false, true})
+			return
+		}
+
 		username := req.FormValue("username")
 		action := req.FormValue("action")
 
-		// Used in render to decide wheteher or not to show error msgs.
 		data := []struct {
 			IsSuccess bool
 			IsFail    bool

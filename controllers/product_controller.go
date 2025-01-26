@@ -16,7 +16,6 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 	)
 
 	userCookie, err := req.Cookie("User")
-
 	if err != nil {
 		// If the cookie is not found, handle the error
 		if err == http.ErrNoCookie {
@@ -34,7 +33,13 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 		Products: productVMs,
 	}
 
-	req.ParseForm()
+	// Handle errors returned by ParseForm
+	err = req.ParseForm()
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error parsing form data: %v", err), http.StatusBadRequest)
+		return
+	}
+
 	action := req.FormValue("action")
 	if action != "" {
 		values := req.URL.Query()
@@ -44,11 +49,11 @@ func ProductsController(w http.ResponseWriter, req *http.Request) {
 
 		if action == Vuln {
 			fmt.Printf("passed")
-			// products =
 			err = http.ErrNoCookie
 		} else {
 			products, err = models.SecureGetProductsByCategory(category)
 		}
+
 		if err != nil {
 			fmt.Fprint(w, err)
 		} else {
