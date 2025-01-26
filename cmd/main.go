@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	static "sqli"
 	"sqli/initializers"
 	"time"
 )
