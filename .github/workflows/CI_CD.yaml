@@ -76,7 +76,7 @@ jobs:
       # Step 5: Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t natnaelcrypto/go-web-application:latest .
+          docker build -t natnaelcrypto/go-web-application-secure:latest .
 
       # Step 6: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
@@ -98,7 +98,7 @@ jobs:
         run: |
           chmod -R 777 $(pwd)
           docker network create zap-network || true
-          docker run --rm --network zap-network --name app-container -p 5000:5000 natnaelcrypto/go-web-application:latest &
+          docker run --rm --network zap-network --name app-container -p 5000:5000 natnaelcrypto/go-web-application-secure:latest &
 
           # Wait for the app to start
           sleep 10
