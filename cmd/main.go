@@ -3,11 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	static "sqli"
 	"sqli/initializers"
-
-	// "sqli/controllers"
-	// "sqli/views"
 	"time"
 )
 
@@ -18,20 +14,47 @@ func init() {
 	initializers.ParseTemplates(static.Templates)
 }
 
+func setSecurityHeaders(w http.ResponseWriter) {
+	// Anti-clickjacking
+	w.Header().Set("X-Frame-Options", "DENY")
+
+	// X-Content-Type-Options
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+
+	// Content Security Policy
+	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self';")
+
+	// Permissions Policy
+	w.Header().Set("Permissions-Policy", "geolocation=(), microphone=()")
+
+	// Cache Control (for non-storable content)
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("Pragma", "no-cache")
+
+	// Anti-CSRF Token (ensure it's in your form)
+	// w.Header().Set("X-CSRF-Token", "<CSRF_TOKEN>") // Replace with actual token generation logic
+}
+
 func main() {
-	Router()
+	// Setup middleware to apply security headers
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		// Apply security headers
+		setSecurityHeaders(w)
+
+		// Your handler logic here
+	})
 
 	address := "0.0.0.0:5000"
 	log.Printf("Listening on %v\n", address)
 
-	// Create an http.Server with timeouts
+	// Create a custom server with timeouts
 	server := &http.Server{
 		Addr:              address,
-		Handler:           nil,              // Use default HTTP handler
-		ReadTimeout:       10 * time.Second, // Maximum duration for reading the entire request, including the body
-		WriteTimeout:      10 * time.Second, // Maximum duration before timing out writes of the response
-		IdleTimeout:       15 * time.Second, // Maximum amount of time to wait for the next request when keep-alives are enabled
-		ReadHeaderTimeout: 5 * time.Second,  // Timeout for reading request headers
+		Handler:           nil, // Use default HTTP handler
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       15 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	// Handle errors from ListenAndServe
