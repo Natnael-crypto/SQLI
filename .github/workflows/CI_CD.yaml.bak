@@ -3,7 +3,7 @@ name: Deploy Go Web Application with Static and Dynamic Analysis
 on:
   push:
     branches:
-      - secure  # Trigger workflow on push to the secure branch
+      - secure  # Trigger workflow on push to the master branch
 
 jobs:
   build-and-deploy:
@@ -75,17 +75,9 @@ jobs:
           chmod -R 777 $(pwd)
           docker network create zap-network || true
           docker run --rm --network zap-network --name app-container -p 5000:5000 natnaelcrypto/go-web-application:latest &
-
-          # Wait for the app to start
           sleep 10
-
-          # Run the ZAP scan with authentication details
-          docker run --rm --network zap-network -v $(pwd):/zap/wrk:rw \
-            -e ZAP_USERNAME=${{ secrets.ZAP_USERNAME }} \
-            -e ZAP_PASSWORD=${{ secrets.ZAP_PASSWORD }} \
-            -t decoyxraylapse/zap2docker-stable:2.13.0 \
+          docker run --rm --network zap-network -v $(pwd):/zap/wrk:rw -t decoyxraylapse/zap2docker-stable:2.13.0 \
             zap-baseline.py -t http://app-container:5000 -r zap-report.html -j zap-out.json -d
-
         continue-on-error: true
 
       # Step 12: Upload OWASP ZAP HTML report
@@ -96,7 +88,7 @@ jobs:
           path: zap-report.html
         continue-on-error: true
 
-      # Step 13: Upload OWASP ZAP JSON Output
+      # Step 13: Upload OWASP ZAP JSON output
       - name: Upload OWASP ZAP JSON Output
         uses: actions/upload-artifact@v3
         with:
