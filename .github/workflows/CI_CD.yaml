@@ -6,7 +6,7 @@ on:
       - secure  # Trigger workflow on push to the secure branch
 
 jobs:
-  build-and-deploy:
+  static-analysis:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,7 +44,22 @@ jobs:
           name: gosec-report
           path: gosec-report.json
 
-      # Step 7: Write the .env file for the application
+  build:
+    runs-on: ubuntu-latest
+    needs: static-analysis
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Go
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.23.2
+
+      # Step 3: Write the .env file for the application
       - name: Write .env file
         run: |
           echo "DBUSER=${{ secrets.DBUSER }}" >> .env
@@ -53,23 +68,32 @@ jobs:
           echo "DBNAME=${{ secrets.DBNAME }}" >> .env
           echo "JWTSECRET=${{ secrets.JWTSECRET }}" >> .env
 
-      # Step 8: Build the Go application
+      # Step 4: Build the Go application
       - name: Build the application
         run: |
           go build -o sqli ./cmd
 
-      # Step 9: Build Docker image
+      # Step 5: Build Docker image
       - name: Build Docker image
         run: |
           docker build -t natnaelcrypto/go-web-application:latest .
 
-      # Step 10: Push Docker image to Docker Hub
+      # Step 6: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
           docker push natnaelcrypto/go-web-application:latest
 
-      # Step 11: Run OWASP ZAP Dynamic Analysis
+  dynamic-test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Run OWASP ZAP Dynamic Analysis
       - name: Run OWASP ZAP Scan (Dynamic Analysis)
         run: |
           chmod -R 777 $(pwd)
@@ -88,7 +112,7 @@ jobs:
 
         continue-on-error: true
 
-      # Step 12: Upload OWASP ZAP HTML report
+      # Step 3: Upload OWASP ZAP HTML report
       - name: Upload OWASP ZAP HTML Report
         uses: actions/upload-artifact@v3
         with:
@@ -96,10 +120,20 @@ jobs:
           path: zap-report.html
         continue-on-error: true
 
-      # Step 13: Upload OWASP ZAP JSON Output
+      # Step 4: Upload OWASP ZAP JSON Output
       - name: Upload OWASP ZAP JSON Output
         uses: actions/upload-artifact@v3
         with:
           name: zap-json-output
           path: zap-out.json
         continue-on-error: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build, dynamic-test]
+
+    steps:
+      # Step 1: Deploy application (example placeholder)
+      - name: Deploy to production
+        run: |
+          echo "Deploying application to production..."
