@@ -95,7 +95,7 @@ func setSecurityHeaders(w http.ResponseWriter) {
 // Router sets up the routes with proper security headers, CSRF protection, and controllers.
 func Router() {
 	// Apply CSRF and security headers to each route
-	http.HandleFunc("/login", applySecurityHeaders(csrfProtection(controllers.LoginController)))
+	http.HandleFunc("/login", applySecurityHeaders(csrfProtection(middleware.RateLimitMiddleware(controllers.LoginController))))
 	http.HandleFunc("/", applySecurityHeaders(csrfProtection(controllers.LoginController)))
 	http.HandleFunc("/products", applySecurityHeaders(csrfProtection(middleware.Guard(controllers.ProductsController))))
 	http.HandleFunc("/admin", applySecurityHeaders(csrfProtection(middleware.Guard(controllers.AdminController))))
