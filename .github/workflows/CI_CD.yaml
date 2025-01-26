@@ -1,4 +1,4 @@
-name: Deploy Go Web Application with Static and Dynamic Analysis_Vulnerable
+name: Deploy Vulnerable Go Web Application with Static and Dynamic Analysis
 
 on:
   push:
