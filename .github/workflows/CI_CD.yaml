@@ -82,7 +82,7 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: |
           docker login -u natnaelcrypto -p ${{ secrets.DOCKER_ACCESS_TOKEN }}
-          docker push natnaelcrypto/go-web-application:latest
+          docker push natnaelcrypto/go-web-application-secure:latest
 
   dynamic-test:
     runs-on: ubuntu-latest
